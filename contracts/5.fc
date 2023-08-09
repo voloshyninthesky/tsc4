@@ -20,16 +20,17 @@
 (tuple) fibonacci_sequence (int n, int k) method_id {
   tuple res = empty_tuple();
   int a = 0; 
-  int b = 1; 
-  int i = 2; 
-  while (i <= n + k) {
-    int next = a + b; 
+  int b = 1;       
+  int i = 0; 
+  while (i < n + k) {
     if (i >= n) {
-      res~tpush(a); 
+      res~tpush(a);
     }
-    a = b; 
-    b = next; 
+    int next = a + b; 
+    a = b;
+    b = next;
     i = i + 1;
   }
   return res;
 }
+
