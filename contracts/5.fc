@@ -23,14 +23,18 @@
   if (k == 0) {
     return res;
   }
-  repeat (n) {
+  repeat (n - 1) {
     int next = a + b; 
     a = b; 
     b = next;
   }
-  res~tpush(a);
-  repeat(k - 1) {
-    res~tpush(b); 
+  int t = 0; 
+  if (n == 0) {
+    res~tpush(a);
+    t = 1;
+  }
+  repeat(k - t) {
+    res~tpush(b);
     int next = a + b; 
     a = b; 
     b = next;
