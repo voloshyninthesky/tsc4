@@ -12,32 +12,66 @@
   1188518561323126046432205871807859915657177,
   1923063428480944139667114773918309212080528]
 -}
+
+int tlen(tuple t) asm "TLEN";
+forall X -> X tget(tuple t, int idx) asm "INDEXVAR";
+
+
 () recv_internal() {
 }
 
-;; testable
-(tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple res = empty_tuple();
-  int a = 0; 
-  int b = 1; 
-  if (k == 0) {
+tuple matrix_multiplier(tuple a, tuple b) {
+    tuple res = empty_tuple();
+    int x1 = (tget(a, 0) * tget(b, 0)) + (tget(a, 1) * tget(b, 2));
+    int x2 = (tget(a, 0) * tget(b, 1)) + (tget(a, 1) * tget(b, 3));
+    int x3 = (tget(a, 2) * tget(b, 0)) + (tget(a, 3) * tget(b, 2));
+    int x4 = (tget(a, 2) * tget(b, 1)) + (tget(a, 3) * tget(b, 3));
+    res~tpush(x1);
+    res~tpush(x2);
+    res~tpush(x3);
+    res~tpush(x4);
     return res;
-  }
-  repeat (n - 1) {
-    int next = a + b; 
-    a = b; 
-    b = next;
-  }
-  int t = 0; 
-  if (n == 0) {
-    res~tpush(a);
-    t = 1;
-  }
-  repeat(k - t) {
-    res~tpush(b);
-    int next = a + b; 
-    a = b; 
-    b = next;
-  }
-  return res;
+}
+
+
+(tuple) pow(tuple a, int n) {
+    tuple res = empty_tuple();
+    res~tpush(1);
+    res~tpush(0);
+    res~tpush(0);
+    res~tpush(1);
+    while (n != 0) {
+        if (n % 2 != 0) {
+            res = matrix_multiplier(res, a); 
+        }
+        n = n / 2; 
+        a = matrix_multiplier(a, a); 
+    }
+    return res; 
+}
+
+
+int fib(int n) {
+    tuple x = empty_tuple();
+    x~tpush(1);
+    x~tpush(1);
+    x~tpush(1);
+    x~tpush(0);
+    return tget(pow(x, n), 1);
+}
+
+;; testable
+tuple fibonacci_sequence(int n, int k) method_id {
+    tuple res = empty_tuple();
+    if (k == 0) {
+        return res; 
+    }
+    int fn = fib(n); 
+    res~tpush(fn);
+    n = n + 1;
+    while (n < k) {
+        res~tpush(fib(n));
+        n = n + 1;
+    }
+    return res;
 }
