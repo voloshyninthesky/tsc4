@@ -51,15 +51,15 @@ tuple matrix_multiplier(tuple a, tuple b) {
 }
 
 
-(int, int) fib(int n) {
+int fib(int n) {
     if (n == 0) {
-        return (0, 0);
+        return 0;
     }
     if (n == 1) {
-        return (0, 1);
+        return 1;
     }
     if (n == 2) {
-        return (1, 1);
+        return 1;
     }
     tuple x = empty_tuple();
     x~tpush(1);
@@ -68,7 +68,7 @@ tuple matrix_multiplier(tuple a, tuple b) {
     x~tpush(0);
     x = pow(x, n); 
 
-    return (tget(x, 0), tget(x, 1));
+    return tget(x, 1);
 }
 
 ;; testable
@@ -77,10 +77,20 @@ tuple fibonacci_sequence(int n, int k) method_id {
     if (k == 0) {
         return res; 
     }
+    int cur = fib(n); 
+    res~tpush(cur);
+    k = k - 1;
+    int prev = 0; 
+    if (k > 0) {
+        prev = cur; 
+        cur = fib(n + 1);
+        res~tpush(cur);
+        n = n + 1; 
+        k = k - 1;
+    }
     while (k > 0) {
-        (int prev, int fib) = fib(n);
-        res~tpush(fib);
-        n = n + 1;
+        (prev, cur) = (cur, prev + cur); 
+        res~tpush(cur);
         k = k - 1;
     }
     return res;
