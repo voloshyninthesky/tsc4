@@ -52,6 +52,15 @@ tuple matrix_multiplier(tuple a, tuple b) {
 
 
 (int, int) fib(int n) {
+    if (n == 0) {
+        return (1, 1);
+    }
+    if (n == 1) {
+        return (1, 1);
+    }
+    if (n == 2) {
+        return (1, 1);
+    }
     tuple x = empty_tuple();
     x~tpush(1);
     x~tpush(1);
@@ -69,8 +78,12 @@ tuple fibonacci_sequence(int n, int k) method_id {
         return res; 
     }
     (int f0, int f1) = fib(n); 
+    if (n == 0) {
+        res~tpush(0);
+        k = k - 1;
+    }
     res~tpush(f1);
-    n = n + 1; 
+    n = n + 1;
     while (n < k) {
         int next = f0 + f1; 
         f0 = f1; 
