@@ -71,7 +71,7 @@ tuple fibonacci_sequence(int n, int k) method_id {
     res~tpush(a); 
     n = n + 1; 
     k = k - 1;
-    while (k - 1 > 0) {
+    while (k > 0) {
         res~tpush(b);
         (a, b) = (b, a + b);
         n = n + 1;
