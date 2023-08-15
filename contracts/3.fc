@@ -75,13 +75,15 @@ int bits(int n) asm "UBITSIZE";
   slice s = linked_list.begin_parse();
   int flag_size = bits(flag); 
   int value_size = bits(value);
+  if (value_size == 0) {
+    value_size = 1;
+  }
   slice flag_slice = begin_cell().store_uint(flag, flag_size).end_cell().begin_parse();
   slice value_slice = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
   builder b = begin_cell();
   tuple builders = empty_tuple();
   while ((slice_bits(s) > 0) | (slice_refs(s) > 0)) {
     (slice rem_s, slice next_bits) = load_next_bits(s, flag_size);
-
     if (equal(next_bits, flag_slice)) {
       s = rem_s; 
       (b, builders) = append(b, value_slice, builders);
@@ -95,8 +97,6 @@ int bits(int n) asm "UBITSIZE";
       s = s~load_ref().begin_parse();
     }
   }
-  if (tlen(builders) < 1) {
-    builders~tpush(b);
-  }
+  builders~tpush(b);
   return (build(builders));
 }
