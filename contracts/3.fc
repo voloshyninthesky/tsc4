@@ -50,7 +50,6 @@ int bits(int n) asm "UBITSIZE";
   } else {
     b = b.store_slice(s);
   }
-  ~dump(builders);
   return (b, builders);
 }
 
