@@ -27,24 +27,20 @@ int bits(int n) asm "UBITSIZE";
 }
 
 (slice, slice) load_next_bits(slice s, int n) {
+  while (slice_bits(s) == 0) & (slice_refs(s) > 0) {
+    s = s~load_ref().begin_parse();
+  }
   if (slice_bits(s) >= n) {
     return s.load_bits(n);
   }
-  
-  if (slice_bits(s) != 0) {
-    slice left = s~load_bits(slice_bits(s)); 
-    if (slice_refs(s) < 1) {
-      return (s, left);   
-    }
-    s = s~load_ref().begin_parse();
-    slice rem = s~load_bits(n - slice_bits(left));
-
-    slice res = begin_cell().store_slice(left).store_slice(rem).end_cell().begin_parse();
+  slice left = s~load_bits(slice_bits(s)); 
+  if (slice_refs(s) < 1) {
+    return (s, left);   
   }
-
   s = s~load_ref().begin_parse();
-
-  return load_next_bits(s, n);
+  slice rem = s~load_bits(n - slice_bits(left));
+  slice res = begin_cell().store_slice(left).store_slice(rem).end_cell().begin_parse();
+  return (s, res); 
 }
 
 (builder, tuple) append(builder b, slice s, tuple builders) {
@@ -84,15 +80,16 @@ int bits(int n) asm "UBITSIZE";
   builder b = begin_cell();
   tuple builders = empty_tuple();
   while ((slice_bits(s) > 0) | (slice_refs(s) > 0)) {
-
     (slice rem_s, slice next_bits) = load_next_bits(s, flag_size);
 
     if (equal(next_bits, flag_slice)) {
       s = rem_s; 
       (b, builders) = append(b, value_slice, builders);
     } else {
-      int bit = s~load_uint(1); 
-      (b, builders) = append(b, begin_cell().store_uint(bit, 1).end_cell().begin_parse(), builders);
+      if (slice_bits(s) > 0) {
+        int bit = s~load_uint(1); 
+        (b, builders) = append(b, begin_cell().store_uint(bit, 1).end_cell().begin_parse(), builders);
+      }
     }
     if ((slice_bits(s) == 0) & (slice_refs(s) > 0)) {
       s = s~load_ref().begin_parse();
