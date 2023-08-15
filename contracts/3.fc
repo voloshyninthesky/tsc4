@@ -44,7 +44,7 @@ int bits(int n) asm "UBITSIZE";
 }
 
 (builder, tuple) append(builder b, slice s, tuple builders) {
-  if (builder_bits(b) + slice_bits(s) >= 1023) {
+  if (builder_bits(b) + slice_bits(s) >= 1024) {
     builders~tpush(b); 
     b = begin_cell().store_slice(s);
   } else {
@@ -55,7 +55,7 @@ int bits(int n) asm "UBITSIZE";
 
 (cell) build(tuple builders) {
   int last = tlen(builders) - 1; 
-  builder prev = null();
+  builder prev = begin_cell();
   int fl = 0; 
   while (last >= 0) {
     builder b = builders.at(last); 
