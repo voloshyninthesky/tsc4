@@ -50,6 +50,7 @@ int bits(int n) asm "UBITSIZE";
   } else {
     b = b.store_slice(s);
   }
+  ~dump(builders);
   return (b, builders);
 }
 
@@ -95,6 +96,8 @@ int bits(int n) asm "UBITSIZE";
       s = s~load_ref().begin_parse();
     }
   }
-  builders~tpush(b);
+  if (tlen(builders) < 1) {
+    builders~tpush(b);
+  }
   return (build(builders));
 }
