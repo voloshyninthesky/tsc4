@@ -22,6 +22,8 @@ forall X -> X tget(tuple t, int idx) asm "INDEXVAR";
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP"; 
 int equal(slice s1, slice s2) asm "SDEQ";
 int bits(int n) asm "UBITSIZE";
+int lead0(slice s) asm "SDCNTLEAD0";
+(int, slice) remove_lead0(slice s) asm "LDZEROES";
 
 () recv_internal() {
 }
@@ -37,9 +39,14 @@ int bits(int n) asm "UBITSIZE";
   if (slice_refs(s) < 1) {
     return (s, left);   
   }
+
   s = s~load_ref().begin_parse();
+  if (slice_bits(left) - n <= 0) {
+    return (s, begin_cell().end_cell().begin_parse());
+  }
   slice rem = s~load_bits(n - slice_bits(left));
   slice res = begin_cell().store_slice(left).store_slice(rem).end_cell().begin_parse();
+
   return (s, res); 
 }
 
@@ -55,7 +62,7 @@ int bits(int n) asm "UBITSIZE";
 
 (cell) build(tuple builders) {
   int last = tlen(builders) - 1; 
-  builder prev = begin_cell();
+  builder prev = null();
   int fl = 0; 
   while (last >= 0) {
     builder b = builders.at(last); 
@@ -75,9 +82,6 @@ int bits(int n) asm "UBITSIZE";
   slice s = linked_list.begin_parse();
   int flag_size = bits(flag); 
   int value_size = bits(value);
-  if (value_size == 0) {
-    value_size = 1;
-  }
   slice flag_slice = begin_cell().store_uint(flag, flag_size).end_cell().begin_parse();
   slice value_slice = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
   builder b = begin_cell();
@@ -96,7 +100,10 @@ int bits(int n) asm "UBITSIZE";
     if ((slice_bits(s) == 0) & (slice_refs(s) > 0)) {
       s = s~load_ref().begin_parse();
     }
+
+
   }
   builders~tpush(b);
   return (build(builders));
 }
+
