@@ -62,7 +62,7 @@ tuple fibonacci_sequence(int n, int k) method_id {
     tuple fibs = fib(n, res);
     (int a, int b) = (fibs.first(), fibs.second());
     res~tpush(a);
-    if (n == 370) {  // Special handling for N == 370
+    if (n == 370) { 
         return res;
     }
     k = k - 1;
