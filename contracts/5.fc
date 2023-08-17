@@ -19,45 +19,27 @@ global int a, b, c, d;
 }
 
 tuple fib(int n, tuple res) {
-    if (n == 369) {
-        res = empty_tuple();
-        res~tpush(58472848379039952684853851736901133239741266891456844557261755914039063645794);  
-        res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);  
-        return res;      
-
-    }
-    if (n == 370) {
-        res = empty_tuple();
-        res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);  
-        res~tpush(0);  
-        return res;      
-    }
     if (n == 0) {
         res = empty_tuple();
         res~tpush(0);
         res~tpush(1);
         return res;
     }
-    res = fib((n / 2), res);
-    a = res.first(); 
+    res = fib(n / 2, res);
+    a = res.first();
     b = res.second();
-    c = 2 * b - a;
-    if (c < 0) {
-        c += a;
-    }
-    c = (a * c); 
-    d = (a * a + b * b);
-    if (n % 2 == 0) {    
+    c = a * ((b << 1) - a);
+    d = a * a + b * b;
+    if (n % 2 == 0) {
         res = empty_tuple();
         res~tpush(c);
         res~tpush(d);
-    }
-    else {
+    } else {
         res = empty_tuple();
         res~tpush(d);
         res~tpush(c + d);
     }
-    return res; 
+    return res;
 }
 
 ;; testable
@@ -66,15 +48,13 @@ tuple fibonacci_sequence(int n, int k) method_id {
     if (k == 0) {
         return res;
     }
-    tuple fibs = fib(n, res);    
+    tuple fibs = fib(n, res);
     (int a, int b) = (fibs.first(), fibs.second());
-    res~tpush(a); 
-    n = n + 1; 
+    res~tpush(a);
     k = k - 1;
     while (k > 0) {
         res~tpush(b);
         (a, b) = (b, a + b);
-        n = n + 1;
         k = k - 1;
     }
     return res;
