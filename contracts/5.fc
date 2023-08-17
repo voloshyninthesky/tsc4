@@ -51,19 +51,14 @@ tuple fib(int n, tuple res) {
 ;; testable
 tuple fibonacci_sequence(int n, int k) method_id {
     tuple res = empty_tuple();
-    
+    if (k == 0) {
+        return res;
+    }
     tuple fibs = fib(n, res);
     (int a, int b) = (fibs.first(), fibs.second());
     res~tpush(a);
     k = k - 1;
-
-   
-
     while (k > 0) {
- if (n == 369) & (k >= 1) {  
-        res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);
-        return res;
-    }
         n = n + 1;
         res~tpush(b);
         (a, b) = (b, a + b);
