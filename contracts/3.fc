@@ -27,18 +27,20 @@ int bits(int n) asm "UBITSIZE";
 }
 
 (slice, slice) load_next_bits(slice s, int n) {
-  while (s.slice_bits() == 0) & (s.slice_refs() > 0) {
+  (int s_bits, int s_refs) = (s.slice_bits(), s.slice_refs());
+  while (s_bits == 0) & (s_refs > 0) {
     s = s~load_ref().begin_parse();
+    s_bits = s.slice_bits();
+    s_refs = s_refs - 1;
   }
-  if (s.slice_bits() == 0) {
+  if (s_bits == 0) {
       return (null(), null()); 
   }
-  if (s.slice_bits() >= n) {
+  if (s_bits >= n) {
     return s.load_bits(n);
   }
-  slice left = s~load_bits(s.slice_bits());
-
-  if (s.slice_refs() < 1) {
+  slice left = s~load_bits(s_bits);
+  if (s_refs < 1) {
     return (s, left);
   }
   s = s~load_ref().begin_parse();
