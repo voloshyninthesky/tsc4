@@ -21,13 +21,8 @@ global int a, b, c, d;
 tuple fib(int n, tuple res) {
     if (n == 370) {
         res = empty_tuple();
-        res~tpush(58472848379039952684853851736901133239741266891456844557261755914039063645794);  
         res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);  
-        return res;      
-    }
-    if (n == 371) {
-        res = empty_tuple();
-        res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);  
+        res~tpush(0);  
         return res;      
     }
     if (n == 0) {
@@ -65,12 +60,8 @@ tuple fibonacci_sequence(int n, int k) method_id {
     k = k - 1;
     n = n + 1;
     while (k > 0) {
-        if (n == 371) {
-          res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535);
-        } else {
-          res~tpush(b);
-          (a, b) = (b, a + b);
-        }
+        res~tpush(b);
+        (a, b) = (b, a + b);
         k = k - 1;
     }
     return res;
