@@ -18,34 +18,22 @@ global int a, b, c, d;
 () recv_internal() {
 }
 
-tuple fib(int n, tuple res) {
+(int, int) fib(int n) {
     if (n == 370) {
-        res = empty_tuple();
-        res~tpush(94611056096305838013295371573764256526437182762229865607320618320601813254535); 
-        res~tpush(0);
-        return res;      
+        int first = 94611056096305838013295371573764256526437182762229865607320618320601813254535; 
+        return (first, 0);      
     }
     if (n == 0) {
-        res = empty_tuple();
-        res~tpush(0);
-        res~tpush(1);
-        return res;
+        return (0, 1);
     }
-    res = fib(n / 2, res);
-    a = res.first();
-    b = res.second();
+    (a, b) = fib(n / 2);
     c = a * ((b << 1) - a);
     d = a * a + b * b;
     if (n % 2 == 0) {
-        res = empty_tuple();
-        res~tpush(c);
-        res~tpush(d);
+        return (c, d);
     } else {
-        res = empty_tuple();
-        res~tpush(d);
-        res~tpush(c + d);
+        return (d, c + d);
     }
-    return res;
 }
 
 ;; testable
@@ -54,8 +42,7 @@ tuple fibonacci_sequence(int n, int k) method_id {
     if (k == 0) {
         return res;
     }
-    tuple fibs = fib(n, res);
-    (int a, int b) = (fibs.first(), fibs.second());
+    (int a, int b) = fib(n);
     res~tpush(a);
     k = k - 1;
     while (k > 0) {
