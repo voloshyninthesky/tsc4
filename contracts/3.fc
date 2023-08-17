@@ -92,7 +92,7 @@ int bits(int n) asm "UBITSIZE";
   tuple builders = empty_tuple();
   while ((slice_bits(s) > 0) | (slice_refs(s) > 0)) {
     (slice rem_s, slice next_bits) = load_next_bits(s, flag_size);
-    if (is_null(rem_s) & is_null(next_bits)) {
+    if (is_null(next_bits)) {
         (b, builders) = append(b, s, builders);
         builders~tpush(b);
         return (build(builders));
