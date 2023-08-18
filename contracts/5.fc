@@ -33,6 +33,16 @@ global int a, b, c, d;
     TUPLEVAR
 """;
 
+(tuple) fast2(int n, int k) asm """
+    0 PUSHINT
+    1 PUSHINT  
+    3 ROLL
+    DEC
+    REPEAT:<{ 2DUP ADD }>
+    1 PUSHINT ONLYTOPX
+    ONE TUPLEVAR 
+""";
+
 (int, int) fib(int n) {
     if (n == 370) {
         return (0, 0);      
@@ -75,11 +85,19 @@ tuple slow(int n, int k) method_id {
 
 ;; testable
 tuple fibonacci_sequence(int n, int k) method_id {
+    int last = 94611056096305838013295371573764256526437182762229865607320618320601813254535;
     tuple res = empty_tuple();
     if (k == 0) {
         return res;
     }
-    if (n > 250) | (k < 3) {
+    if (n == 370) {
+        res~tpush(last); 
+        return res; 
+    }
+    if (k == 1) {
+        return fast2(n, k);
+    }
+    if (n > 250) | (k < 2) {
         return slow(n, k);
     }
     return fast(n, k); 
