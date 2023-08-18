@@ -17,11 +17,12 @@
 -}
 
 forall X -> int is_null(X x) asm "ISNULL";
-int tlen(tuple t) asm "TLEN";
 forall X -> X tget(tuple t, int idx) asm "INDEXVAR";
-forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP"; 
 int equal(slice s1, slice s2) asm "SDEQ";
 int bits(int n) asm "UBITSIZE";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 
 () recv_internal() {
 }
@@ -55,7 +56,7 @@ int bits(int n) asm "UBITSIZE";
 
 (builder, tuple) append(builder b, slice s, tuple builders) {
   if (builder_bits(b) + slice_bits(s) >= 1023) {
-    builders~tpush(b); 
+    builders~push_back(b); 
     b = begin_cell().store_slice(s);
   } else {
     b = b.store_slice(s);
@@ -64,18 +65,16 @@ int bits(int n) asm "UBITSIZE";
 }
 
 (cell) build(tuple builders) {
-  int last = tlen(builders) - 1; 
   builder prev = null();
   int fl = 0; 
-  while (last >= 0) {
-    builder b = builders.at(last); 
+  while (~ is_null(builders)) {
+    builder b = builders~pop_back(); 
     if (fl != 0) {
       cell c = prev.end_cell();
       b = b.store_ref(c);
     } 
     fl = 1;
     prev = b;
-    last = last - 1; 
   }
   return prev.end_cell();
 }
@@ -92,7 +91,7 @@ int bits(int n) asm "UBITSIZE";
   slice value_slice = begin_cell().store_uint(value, value_size).end_cell().begin_parse();
 
   builder b = begin_cell();
-  tuple builders = empty_tuple();
+  tuple builders = null();
 
   int s_bits = s.slice_bits();
   int s_refs = s.slice_refs();
@@ -101,7 +100,7 @@ int bits(int n) asm "UBITSIZE";
     (slice rem_s, slice next_bits) = load_next_bits(s, flag_size);
     if (is_null(next_bits)) {
         (b, builders) = append(b, s, builders);
-        builders~tpush(b);
+        builders~push_back(b);
         return (build(builders));
     }
     if (equal(next_bits, flag_slice)) {
@@ -116,6 +115,6 @@ int bits(int n) asm "UBITSIZE";
       (b, builders) = append(b, bit, builders); 
     }
   }
-  builders~tpush(b);
+  builders~push_back(b);
   return (build(builders));
 }
