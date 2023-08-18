@@ -16,23 +16,18 @@
 () recv_internal() {
 }
 
-global int a, b, c, d;
-(int, int) fib(int n) {
-    if (n == 370) {
-        return (0, 0);      
-    }
-    if (n == 0) {
-        return (0, 1);
-    }
-    (a, b) = fib(n / 2);
-    c = a * ((b << 1) - a);
-    d = a * a + b * b;
-    if (n % 2 == 0) {
-        return (c, d);
-    } else {
-        return (d, c + d);
-    }
-}
+(tuple) fib(int n, int k) asm """
+    0 PUSHINT
+    1 PUSHINT  
+    3 ROLL
+    REPEAT:<{ 2DUP ADD }> 
+    DEPTH DEC PICK
+    3 PUSHINT ONLYTOPX   
+    REPEAT:<{ 2DUP ADD }>
+    DEPTH
+    TUPLEVAR
+""";
+
 
 ;; testable
 tuple fibonacci_sequence(int n, int k) method_id {
@@ -41,19 +36,5 @@ tuple fibonacci_sequence(int n, int k) method_id {
     if (k == 0) {
         return res;
     }
-    (a, b) = fib(n);
-    if (a == 0) & (b == 0) {
-        a = last; 
-    }
-    while (k > 0) {
-        res~tpush(a);
-        if (b != last) {
-            (a, b) = (b, a + b);
-            k = k - 1;
-        } else {
-            k = 0;
-            res~tpush(b);
-        }
-    }
-    return res;
+    return fib(n, k); 
 }
